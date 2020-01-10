@@ -60,31 +60,34 @@ haste_document.prototype.save = function(data, callback) {
   }
   this.data = data;
   var _this = this;
-  $.ajax('/documents', {
-    type: 'post',
-    data: data,
-    dataType: 'json',
-    contentType: 'application/json; charset=utf-8',
-    success: function(res) {
-      _this.locked = true;
-      _this.key = res.key;
-      var high = hljs.highlightAuto(data);
-      callback(null, {
-        value: high.value,
-        key: res.key,
-        language: high.language,
-        lineCount: data.split('\n').length
-      });
-    },
-    error: function(res) {
-      try {
-        callback($.parseJSON(res.responseText));
-      }
-      catch (e) {
-        callback({message: 'Something went wrong!'});
+  var request = new XMLHttpRequest();
+  request.open('POST', '/documents', true);
+  request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+  request.send(data);
+
+  request.onreadystatechange = function() {
+    if (this.readyState === 4) {
+      if (this.status >= 200 && this.status < 400) {
+        var res = JSON.parse(this.response);
+        _this.locked = true;
+        _this.key = res.key;
+        var high = hljs.highlightAuto(data);
+        callback(null, {
+          value: high.value,
+          key: res.key,
+          language: high.language,
+          lineCount: data.split('\n').length
+        });
+      } else {
+        try {
+          callback(JSON.parse(this.responseText));
+        }
+        catch (e) {
+          callback({message: 'Something went wrong!'});
+        }
       }
     }
-  });
+  }
 };
 
 ///// represents the paste application
