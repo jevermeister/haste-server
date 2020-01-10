@@ -18,39 +18,44 @@ haste_document.prototype.htmlEscape = function(s) {
 // Get this document from the server and lock it here
 haste_document.prototype.load = function(key, callback, lang) {
   var _this = this;
-  $.ajax('/documents/' + key, {
-    type: 'get',
-    dataType: 'json',
-    success: function(res) {
-      _this.locked = true;
-      _this.key = key;
-      _this.data = res.data;
-      try {
-        var high;
-        if (lang === 'txt') {
-          high = { value: _this.htmlEscape(res.data) };
-        }
-        else if (lang) {
-          high = hljs.highlight(lang, res.data);
-        }
-        else {
+  var request = new XMLHttpRequest();
+  request.open('GET', '/documents/' + key, true);
+
+  request.onreadystatechange = function() {
+    if (this.readyState === 4) {
+      if (this.status >= 200 && this.status < 400) {
+        var res = JSON.parse(this.response);
+        _this.locked = true;
+        _this.key = key;
+        _this.data = res.data;
+        try {
+          var high;
+          if (lang === 'txt') {
+            high = { value: _this.htmlEscape(res.data) };
+          }
+          else if (lang) {
+            high = hljs.highlight(lang, res.data);
+          }
+          else {
+            high = hljs.highlightAuto(res.data);
+          }
+        } catch(err) {
+          // failed highlight, fall back on auto
           high = hljs.highlightAuto(res.data);
         }
-      } catch(err) {
-        // failed highlight, fall back on auto
-        high = hljs.highlightAuto(res.data);
+        callback({
+          value: high.value,
+          key: key,
+          language: high.language || lang,
+          lineCount: res.data.split('\n').length
+        });
+      } else {
+        callback(false);
       }
-      callback({
-        value: high.value,
-        key: key,
-        language: high.language || lang,
-        lineCount: res.data.split('\n').length
-      });
-    },
-    error: function() {
-      callback(false);
     }
-  });
+  }
+  request.send();
+  request = null;
 };
 
 // Save this document to the server and lock it here
