@@ -100,15 +100,15 @@ haste_document.prototype.save = function(data, callback) {
 var haste = function(appName, options) {
   this.appName = appName;
   this.$textarea = $('textarea');
-  this.$box = $('#box');
-  this.$code = $('#box code');
-  this.$linenos = $('#linenos');
+  this.box = document.getElementById('box');
+  this.code = document.getElementById('box').getElementsByTagName('code')[0];
+  this.linenos = document.getElementById('linenos'); // this is never used?
   this.options = options;
   this.configureShortcuts();
   this.configureButtons();
   // If twitter is disabled, hide the button
   if (!options.twitter) {
-    $('#box2 .twitter').hide();
+    document.getElementById('box2').getElementsByClassName('twitter')[0].style.display = 'none';
   }
 };
 
@@ -137,25 +137,25 @@ haste.prototype.fullKey = function() {
   this.configureKey(['new', 'duplicate', 'twitter', 'raw']);
 };
 
-// Set the key up for certain things to be enabled
+/* Compare passed class array "enable" against buttons. If the class names 
+ * are matching, enable the button, otherwise disable it. */
 haste.prototype.configureKey = function(enable) {
-  var $this, i = 0;
-  $('#box2 .function').each(function() {
-    $this = $(this);
-    for (i = 0; i < enable.length; i++) {
-      if ($this.hasClass(enable[i])) {
-        $this.addClass('enabled');
+  var elements = document.querySelectorAll('#box2 .function');
+  Array.prototype.forEach.call(elements, function(el) {
+    for (var i = 0; i < enable.length; i++) {
+      if (el.classList.contains(enable[i])) {
+        el.classList.add('enabled');
         return true;
       }
     }
-    $this.removeClass('enabled');
+    el.classList.remove('enabled');
   });
 };
 
 // Remove the current document (if there is one)
 // and set up for a new one
 haste.prototype.newDocument = function(hideHistory) {
-  this.$box.hide();
+  this.box.style.display = 'none';
   this.doc = new haste_document();
   if (!hideHistory) {
     window.history.pushState(null, this.appName, '/');
@@ -212,7 +212,6 @@ haste.prototype.removeLineNumbers = function() {
   document.getElementById('linenos').innerHTML = '&gt;';
 };
 
-
 // Load a document and show it
 haste.prototype.loadDocument = function(key) {
   // Split the key up
@@ -222,11 +221,12 @@ haste.prototype.loadDocument = function(key) {
   _this.doc = new haste_document();
   _this.doc.load(parts[0], function(ret) {
     if (ret) {
-      _this.$code.html(ret.value);
+      _this.code.innerHTML = ret.value;
       _this.setTitle(ret.key);
       _this.fullKey();
       _this.$textarea.val('').hide();
-      _this.$box.show().focus();
+      _this.box.style.display = '';
+      _this.box.focus();
       _this.addLineNumbers(ret.lineCount);
     }
     else {
@@ -252,7 +252,7 @@ haste.prototype.lockDocument = function() {
       _this.showMessage(err.message, 'error');
     }
     else if (ret) {
-      _this.$code.html(ret.value);
+      _this.code.innerHTML = ret.value;
       _this.setTitle(ret.key);
       var file = '/' + ret.key;
       if (ret.language) {
@@ -261,7 +261,8 @@ haste.prototype.lockDocument = function() {
       window.history.pushState(null, _this.appName + '-' + ret.key, file);
       _this.fullKey();
       _this.$textarea.val('').hide();
-      _this.$box.show().focus();
+      _this.box.style.display = '';
+      _this.box.focus();
       _this.addLineNumbers(ret.lineCount);
     }
   });
@@ -333,22 +334,12 @@ haste.prototype.configureButtons = function() {
   }
 };
 
-
-function hasClass(target, className) {
-  if (target.classList) {
-    return target.classList.contains(className);
-  } else {
-    /* Thank you, IE8 */
-    return new RegExp('(\\s|^)' + className + '(\\s|$)').test(target.className);
-  }
-}
-
 haste.prototype.configureButton = function(options) {
   // Handle the click action
   options.where.onclick = function(evt) {
     evt.preventDefault();
 
-    if (!options.clickDisabled && hasClass(this, 'enabled')) {
+    if (!options.clickDisabled && this.classList.contains('enabled')) {
       options.action();
     }
   };
