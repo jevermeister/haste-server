@@ -120,10 +120,11 @@ haste.prototype.setTitle = function(ext) {
 
 // Show a message box
 haste.prototype.showMessage = function(msg, cls) {
-  var msgBox = $('<li class="'+(cls || 'info')+'">'+msg+'</li>');
-  $('#messages').prepend(msgBox);
+  var msgArea = document.getElementById('messages');
+  msgArea.insertAdjacentHTML('afterbegin', '<li class="'+(cls || 'info')+'">'+msg+'</li>');
   setTimeout(function() {
-    msgBox.slideUp('fast', function() { $(this).remove(); });
+    /* maybe this could be also done prettier similar to slideup of jQuery */
+    msgArea.firstElementChild.remove()
   }, 3000);
 };
 
