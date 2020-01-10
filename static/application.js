@@ -99,7 +99,7 @@ haste_document.prototype.save = function(data, callback) {
 
 var haste = function(appName, options) {
   this.appName = appName;
-  this.$textarea = $('textarea');
+  this.textarea = document.getElementsByTagName('textarea')[0];
   this.box = document.getElementById('box');
   this.code = document.getElementById('box').getElementsByTagName('code')[0];
   this.linenos = document.getElementById('linenos'); // this is never used?
@@ -163,9 +163,10 @@ haste.prototype.newDocument = function(hideHistory) {
   }
   this.setTitle();
   this.lightKey();
-  this.$textarea.val('').show('fast', function() {
-    this.focus();
-  });
+  this.textarea.value = '';
+  this.textarea.style.display = 'inline-block';
+  this.textarea.focus();
+  // focus textarea after 200 ms?!
   this.removeLineNumbers();
 };
 
@@ -225,7 +226,8 @@ haste.prototype.loadDocument = function(key) {
       _this.code.innerHTML = ret.value;
       _this.setTitle(ret.key);
       _this.fullKey();
-      _this.$textarea.val('').hide();
+      _this.textarea.value = '';
+      _this.textarea.style.display = 'none';
       _this.box.style.display = '';
       _this.box.focus();
       _this.addLineNumbers(ret.lineCount);
@@ -241,14 +243,14 @@ haste.prototype.duplicateDocument = function() {
   if (this.doc.locked) {
     var currentData = this.doc.data;
     this.newDocument();
-    this.$textarea.val(currentData);
+    this.textarea.value = currentData;
   }
 };
 
 // Lock the current document
 haste.prototype.lockDocument = function() {
   var _this = this;
-  this.doc.save(this.$textarea.val(), function(err, ret) {
+  this.doc.save(this.textarea.value, function(err, ret) {
     if (err) {
       _this.showMessage(err.message, 'error');
     }
@@ -261,7 +263,8 @@ haste.prototype.lockDocument = function() {
       }
       window.history.pushState(null, _this.appName + '-' + ret.key, file);
       _this.fullKey();
-      _this.$textarea.val('').hide();
+      _this.textarea.value = '';
+      _this.textarea.style.display = 'none';
       _this.box.style.display = '';
       _this.box.focus();
       _this.addLineNumbers(ret.lineCount);
@@ -280,7 +283,7 @@ haste.prototype.configureButtons = function() {
         return evt.ctrlKey && (evt.keyCode === 83);
       },
       action: function() {
-        if (_this.$textarea.val().replace(/^\s+|\s+$/g, '') !== '') {
+        if (_this.textarea.value.replace(/^\s+|\s+$/g, '') !== '') {
           _this.lockDocument();
         }
       }
@@ -361,7 +364,7 @@ haste.prototype.configureButton = function(options) {
 // Configure keyboard shortcuts for the textarea
 haste.prototype.configureShortcuts = function() {
   var _this = this;
-  $(document.body).keydown(function(evt) {
+  document.body.onkeydown = function(evt) {
     var button;
     for (var i = 0 ; i < _this.buttons.length; i++) {
       button = _this.buttons[i];
@@ -371,7 +374,7 @@ haste.prototype.configureShortcuts = function() {
         return;
       }
     }
-  });
+  };
 };
 
 ///// Tab behavior in the textarea - 2 spaces per tab
