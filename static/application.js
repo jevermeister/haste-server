@@ -204,13 +204,14 @@ haste.prototype.addLineNumbers = function(lineCount) {
   for (var i = 0; i < lineCount; i++) {
     h += (i + 1).toString() + '<br/>';
   }
-  $('#linenos').html(h);
+  document.getElementById('linenos').innerHTML = h;
 };
 
 // Remove the line numbers
 haste.prototype.removeLineNumbers = function() {
-  $('#linenos').html('&gt;');
+  document.getElementById('linenos').innerHTML = '&gt;';
 };
+
 
 // Load a document and show it
 haste.prototype.loadDocument = function(key) {
