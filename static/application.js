@@ -271,7 +271,7 @@ haste.prototype.configureButtons = function() {
   var _this = this;
   this.buttons = [
     {
-      $where: $('#box2 .save'),
+      where: document.getElementById('box2').getElementsByClassName('save')[0],
       label: 'Save',
       shortcutDescription: 'control + s',
       shortcut: function(evt) {
@@ -284,7 +284,7 @@ haste.prototype.configureButtons = function() {
       }
     },
     {
-      $where: $('#box2 .new'),
+      where: document.getElementById('box2').getElementsByClassName('new')[0],
       label: 'New',
       shortcut: function(evt) {
         return evt.ctrlKey && evt.keyCode === 78;
@@ -295,7 +295,7 @@ haste.prototype.configureButtons = function() {
       }
     },
     {
-      $where: $('#box2 .duplicate'),
+      where: document.getElementById('box2').getElementsByClassName('duplicate')[0],
       label: 'Duplicate & Edit',
       shortcut: function(evt) {
         return _this.doc.locked && evt.ctrlKey && evt.keyCode === 68;
@@ -306,7 +306,7 @@ haste.prototype.configureButtons = function() {
       }
     },
     {
-      $where: $('#box2 .raw'),
+      where: document.getElementById('box2').getElementsByClassName('raw')[0],
       label: 'Just Text',
       shortcut: function(evt) {
         return evt.ctrlKey && evt.shiftKey && evt.keyCode === 82;
@@ -317,7 +317,7 @@ haste.prototype.configureButtons = function() {
       }
     },
     {
-      $where: $('#box2 .twitter'),
+      where: document.getElementById('box2').getElementsByClassName('twitter')[0],
       label: 'Twitter',
       shortcut: function(evt) {
         return _this.options.twitter && _this.doc.locked && evt.shiftKey && evt.ctrlKey && evt.keyCode == 84;
@@ -333,26 +333,37 @@ haste.prototype.configureButtons = function() {
   }
 };
 
+
+function hasClass(target, className) {
+  if (target.classList) {
+    return target.classList.contains(className);
+  } else {
+    /* Thank you, IE8 */
+    return new RegExp('(\\s|^)' + className + '(\\s|$)').test(target.className);
+  }
+}
+
 haste.prototype.configureButton = function(options) {
   // Handle the click action
-  options.$where.click(function(evt) {
+  options.where.onclick = function(evt) {
     evt.preventDefault();
-    if (!options.clickDisabled && $(this).hasClass('enabled')) {
+
+    if (!options.clickDisabled && hasClass(this, 'enabled')) {
       options.action();
     }
-  });
+  };
   // Show the label
-  options.$where.mouseenter(function() {
-    $('#box3 .label').text(options.label);
-    $('#box3 .shortcut').text(options.shortcutDescription || '');
-    $('#box3').show();
-    $(this).append($('#pointer').remove().show());
-  });
+  options.where.onmouseenter = function() {
+    document.getElementById('box3').getElementsByClassName('label')[0].innerText = options.label;
+    document.getElementById('box3').getElementsByClassName('shortcut')[0].innerText = (options.shortcutDescription || '');
+    document.getElementById('box3').style.display = 'block';
+    document.getElementById('pointer').style.display = 'block';
+  };
   // Hide the label
-  options.$where.mouseleave(function() {
-    $('#box3').hide();
-    $('#pointer').hide();
-  });
+  options.where.onmouseleave = function() {
+    document.getElementById('box3').style.display = 'none';
+    document.getElementById('pointer').style.display = 'none';
+  };
 };
 
 // Configure keyboard shortcuts for the textarea
