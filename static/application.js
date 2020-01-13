@@ -106,6 +106,7 @@ var haste = function(appName, options) {
   this.options = options;
   this.configureShortcuts();
   this.configureButtons();
+  this.setupTabHandling();
   // If twitter is disabled, hide the button
   if (!options.twitter) {
     document.getElementById('box2').getElementsByClassName('twitter')[0].style.display = 'none';
@@ -378,7 +379,7 @@ haste.prototype.configureShortcuts = function() {
 };
 
 ///// Tab behavior in the textarea - 2 spaces per tab
-window.onload = function() {
+haste.prototype.setupTabHandling = function() {
   document.getElementsByTagName('textarea')[0].onkeydown = function(evt) {
     if (evt.keyCode === 9) {
       evt.preventDefault();
