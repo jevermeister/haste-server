@@ -22,9 +22,10 @@ STDOUT.  Check the README there for more details and usages.
 
 ## Tested Browsers
 
-* Firefox 8
-* Chrome 17
-* Safari 5.3
+* Firefox 8+
+* Chrome 34+
+* Safari 5.3+
+* Internet Explorer 10+
 
 ## Installation
 
@@ -228,6 +229,5 @@ SOFTWARE
 
 ### Other components:
 
-* jQuery: MIT/GPL license
 * highlight.js: Copyright © 2006, Ivan Sagalaev
 * highlightjs-coffeescript: WTFPL - Copyright © 2011, Dmytrii Nagirniak
