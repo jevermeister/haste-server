@@ -378,9 +378,8 @@ haste.prototype.configureShortcuts = function() {
 };
 
 ///// Tab behavior in the textarea - 2 spaces per tab
-$(function() {
-
-  $('textarea').keydown(function(evt) {
+window.onload = function() {
+  document.getElementsByTagName('textarea')[0].onkeydown = function(evt) {
     if (evt.keyCode === 9) {
       evt.preventDefault();
       var myValue = '  ';
@@ -409,6 +408,6 @@ $(function() {
         this.focus();
       }
     }
-  });
+  };
 
-});
+};
