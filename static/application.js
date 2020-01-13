@@ -412,3 +412,15 @@ haste.prototype.setupTabHandling = function() {
   };
 
 };
+
+// Construct app and load initial path if present
+(function() {
+  app = new haste('hastebin', { twitter: true });
+  var path = window.location.pathname;
+  if (path === '/') {
+    app.newDocument(true);
+  } else {
+    app.loadDocument(path.substring(1, path.length));
+  }
+})();
+
