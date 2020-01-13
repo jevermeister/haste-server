@@ -353,7 +353,8 @@ haste.prototype.configureButton = function(options) {
     document.getElementById('box3').getElementsByClassName('label')[0].innerText = options.label;
     document.getElementById('box3').getElementsByClassName('shortcut')[0].innerText = (options.shortcutDescription || '');
     document.getElementById('box3').style.display = 'block';
-    document.getElementById('pointer').style.display = 'block';
+    this.appendChild(document.getElementById('pointer'));
+    document.getElementById('pointer').style.display = '';
   };
   // Hide the label
   options.where.onmouseleave = function() {
